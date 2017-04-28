@@ -1,2 +1,2 @@
 # nyc-scenario-generator
-Turns the NYC Taxi dataset into a RinSim scenario
+Generates RinSim scenarios from the NYC taxi dataset.
