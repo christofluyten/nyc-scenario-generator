@@ -44,11 +44,11 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.rinde</groupId>
-            <artifactId>rinsim-example</artifactId>
-            <version>4.4.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.github.rinde</groupId>-->
+            <!--<artifactId>rinsim-example</artifactId>-->
+            <!--<version>4.4.1</version>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
             <!--<groupId>com.github.rinde</groupId>-->
@@ -62,13 +62,13 @@
             <!--<version>3.3.0-SNAPSHOT</version>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-        <!--<groupId>student.kuleuven.be</groupId>-->
-        <!--<artifactId>NewYorkCityTaxiChallenge</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${project.basedir}/src/main/resources/nyctaxidata-to-rinsimscenario.jar</systemPath>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.github.christofluyten</groupId>
+            <artifactId>nyc-rinsim-extension</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jars/nyc-rinsim-extension.jar</systemPath>
+        </dependency>
 
 
         <dependency>

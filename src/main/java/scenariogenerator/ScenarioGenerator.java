@@ -1,5 +1,6 @@
 package scenariogenerator;
 
+import com.github.christofluyten.routingtable.RoutingTable;
 import com.github.rinde.rinsim.core.model.pdp.DefaultPDPModel;
 import com.github.rinde.rinsim.core.model.pdp.Parcel;
 import com.github.rinde.rinsim.core.model.pdp.TimeWindowPolicy;
@@ -9,6 +10,7 @@ import com.github.rinde.rinsim.core.model.time.RealtimeClockController;
 import com.github.rinde.rinsim.core.model.time.TimeModel;
 import com.github.rinde.rinsim.geom.ListenableGraph;
 import com.github.rinde.rinsim.geom.Point;
+import com.github.rinde.rinsim.geom.RoutingTableSupplier;
 import com.github.rinde.rinsim.geom.io.DotGraphIO;
 import com.github.rinde.rinsim.pdptw.common.*;
 import com.github.rinde.rinsim.scenario.Scenario;
@@ -224,7 +226,8 @@ public class ScenarioGenerator {
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int totalCount = 0;
         int addedCount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.getRoutingTable();
+//TODO path meegeven
+        RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("path");
         for (SimulationObject object : passengers) {
             if (true && (totalCount % 20 == 0)) {
                 addedCount++;
