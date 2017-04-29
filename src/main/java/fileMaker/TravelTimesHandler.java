@@ -12,6 +12,8 @@ import java.util.*;
  */
 public class TravelTimesHandler {
 
+    //TODO aanpassen zodat de gemiddelde snelheid over meerder uren genomen kan worden
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         IOHandler ioHandler = new IOHandler();
         ioHandler.setTravelTimesDirectory("/media/christof/Elements/Traffic_estimates/");

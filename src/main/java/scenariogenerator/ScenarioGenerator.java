@@ -71,7 +71,6 @@ public class ScenarioGenerator {
     private boolean debug;
 
 
-
     private IOHandler ioHandler;
 
     public ScenarioGenerator() {
@@ -94,7 +93,8 @@ public class ScenarioGenerator {
 
     public static void main(String[] args) throws Exception {
         ScenarioGenerator sg = new ScenarioGenerator();
-        sg.generateTaxiScenario(false, false);
+        Scenario s = sg.generateTaxiScenario(false, true);
+        System.out.println("scenario made");
     }
 
     public IOHandler getIoHandler() {

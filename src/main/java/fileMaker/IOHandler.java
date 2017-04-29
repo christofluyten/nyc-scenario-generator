@@ -295,7 +295,7 @@ public class IOHandler {
                     LinkMapHandler.cut(linksDirectory + linkMapFileName, cutLength);
                     readLinkMap();
                 } catch (Exception e2){
-                    System.out.println("geen links.csv: " + getLinksFilePath() + "of iets veranderd aan link");
+                    System.out.println("geen links.csv: " + getLinksFilePath() + " of iets veranderd aan link");
                     throw new IOException();
                 }
             }
