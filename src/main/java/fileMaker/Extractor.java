@@ -103,7 +103,7 @@ class Extractor {
         Commander commander = new Commander();
         Command addPassenger = new addPassengerCommand();
         commander.setCommand(addPassenger);
-        extractSimulationObjects(getIoHandler().getPassengerDataFile(), commander, getIoHandler().getPassengerStartTime(), getIoHandler().getPassengerEndTime());
+        extractSimulationObjects(getIoHandler().getPassengerDataFile(), commander, getIoHandler().getScenarioStartTime(), getIoHandler().getScenarioEndTime());
 
         Positioner positioner = new Positioner(simulationObjectList, getIoHandler());
         positioner.setPassengerPositions();
@@ -115,7 +115,7 @@ class Extractor {
 //        taxiCapacityMap = ioHandler.getTaxiCapacity();
 //        setPositioningMap();
         commander.setCommand(addTaxi);
-        extractSimulationObjects(getIoHandler().getTaxiDataFile(), commander, getIoHandler().getTaxiStartTime(), getIoHandler().getTaxiEndTime());
+        extractSimulationObjects(getIoHandler().getTaxiDataFile(), commander, getIoHandler().getScenarioStartTime(), getIoHandler().getScenarioEndTime());
         System.out.println("taxi's found in map " + count1);
         System.out.println("taxi's not in map " + count2);
         Positioner positioner = new Positioner(simulationObjectList, getIoHandler());
@@ -124,8 +124,8 @@ class Extractor {
 
     private Map<String, String[]> setPositioningMap() throws FileNotFoundException {
         this.positioningMap = new HashMap<>();
-        List<String[]> lines = extractLines(getIoHandler().getPassengerDataFile(), Date.getNextHour(getIoHandler().getPassengerStartTime(), -2)
-                , getIoHandler().getPassengerStartTime());
+        List<String[]> lines = extractLines(getIoHandler().getPassengerDataFile(), Date.getNextHour(getIoHandler().getScenarioStartTime(), -2)
+                , getIoHandler().getScenarioStartTime());
         for (String[] line : lines) {
             if (cleanLine(line)) {
                 if (!positioningMap.containsKey(line[0]) || new Date(positioningMap.get(line[0])[6]).diff(new Date(line[6])) < 0) {

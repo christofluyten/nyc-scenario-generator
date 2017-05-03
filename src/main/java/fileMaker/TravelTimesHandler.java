@@ -177,8 +177,8 @@ public class TravelTimesHandler {
     public static void setTraffic(Map<String, Link> linkMap, IOHandler ioHandler) throws IOException, ClassNotFoundException {
         Map<String,List<Double>> minAndAverageTravelTimes = ioHandler.getLinkToMinAndAverageTravelTimes();
         Map<String,Map<data.time.Date,Double>> dateToTravelTimes = ioHandler.getDateToTravelTimes();
-        data.time.Date startDate = ioHandler.getPassengerStartTime();
-        data.time.Date endDate = ioHandler.getPassengerEndTime();
+        data.time.Date startDate = ioHandler.getScenarioStartTime();
+        data.time.Date endDate = ioHandler.getScenarioEndTime();
         for(String id : linkMap.keySet()){
             Link link = linkMap.get(id);
             data.time.Date iterator = new data.time.Date(startDate.getStringDate());

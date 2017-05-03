@@ -36,10 +36,8 @@ public class IOHandler {
     private static final String taxisDirectory = "src/main/resources/taxis/";
     private String taxiDataDirectory;
     private String travelTimesDirectory;
-    private Date passengerStartTime;
-    private Date passengerEndTime;
-    private Date taxiStartTime;
-    private Date taxiEndTime;
+    private Date scenarioStartTime;
+    private Date scenarioEndTime;
     private boolean withTraffic = false;
     private String attribute = "";
     private Map<Integer, Map<Integer, Set<Link>>> positionToClosestLinks;
@@ -100,7 +98,7 @@ public class IOHandler {
     }
 
     String getTaxiCapacityPath() {
-        return taxisDirectory + "capacity_" + taxiStartTime.getYear();
+        return taxisDirectory + "capacity_" + scenarioStartTime.getYear();
     }
 
     public String getAttribute() {
@@ -146,7 +144,7 @@ public class IOHandler {
     }
 
     String getPassengerDataFile() {
-        return taxiDataDirectory + "FOIL" + passengerStartTime.getYear() + "/trip_data_" + passengerStartTime.getMonth() + ".csv";
+        return taxiDataDirectory + "FOIL" + scenarioStartTime.getYear() + "/trip_data_" + scenarioStartTime.getMonth() + ".csv";
     }
 
     public void setTaxiDataDirectory(String taxiDataDirectory) {
@@ -161,12 +159,12 @@ public class IOHandler {
         this.travelTimesDirectory = travelTimesDirectory;
     }
 
-    public Date getPassengerStartTime() {
-        return passengerStartTime;
+    public Date getScenarioStartTime() {
+        return scenarioStartTime;
     }
 
-    public void setPassengerStartTime(Date passengerStartTime) {
-        this.passengerStartTime = passengerStartTime;
+    public void setScenarioStartTime(Date passengerStartTime) {
+        this.scenarioStartTime = passengerStartTime;
     }
 
 //    public static String getLinkMapFileName() {
@@ -177,37 +175,22 @@ public class IOHandler {
 //        return linksDirectory;
 //    }
 
-    public Date getPassengerEndTime() {
-        return passengerEndTime;
+    public Date getScenarioEndTime() {
+        return scenarioEndTime;
     }
 
-    public void setPassengerEndTime(Date passengerEndTime) {
-        this.passengerEndTime = passengerEndTime;
+    public void setScenarioEndTime(Date passengerEndTime) {
+        this.scenarioEndTime = passengerEndTime;
     }
 
     String getTaxiDataFile() {
-        return taxiDataDirectory + "FOIL" + taxiStartTime.getYear() + "/trip_data_" + taxiStartTime.getMonth() + ".csv";
+        return taxiDataDirectory + "FOIL" + scenarioStartTime.getYear() + "/trip_data_" + scenarioStartTime.getMonth() + ".csv";
     }
 
     String getTaxiDataYearPath() {
-        return taxiDataDirectory + "FOIL" + taxiStartTime.getYear() + "/trip_data_";
+        return taxiDataDirectory + "FOIL" + scenarioStartTime.getYear() + "/trip_data_";
     }
 
-    Date getTaxiStartTime() {
-        return taxiStartTime;
-    }
-
-    public void setTaxiStartTime(Date taxiStartTime) {
-        this.taxiStartTime = taxiStartTime;
-    }
-
-    Date getTaxiEndTime() {
-        return taxiEndTime;
-    }
-
-    public void setTaxiEndTime(Date taxiEndTime) {
-        this.taxiEndTime = taxiEndTime;
-    }
 
     private String getLinkMapPath() {
         return linksDirectory + linkMapFileName + getCutLength();
@@ -222,11 +205,11 @@ public class IOHandler {
     }
 
     public String getPositionedPassengersPath(){
-        return passengersDirectory + positionedPassengersFileName + getCutLength() + attribute + "_" + passengerStartTime.getShortStringDateForPath() + "_" + passengerEndTime.getShortStringDateForPath();
+        return passengersDirectory + positionedPassengersFileName + getCutLength() + attribute + "_" + scenarioStartTime.getShortStringDateForPath() + "_" + scenarioEndTime.getShortStringDateForPath();
     }
 
     public String getPositionedTaxisPath(){
-        return taxisDirectory + positionedTaxisFileName + getCutLength() + attribute + "_" + taxiStartTime.getShortStringDateForPath() + "_" + taxiEndTime.getShortStringDateForPath();
+        return taxisDirectory + positionedTaxisFileName + getCutLength() + attribute + "_" + scenarioStartTime.getShortStringDateForPath() + "_" + scenarioEndTime.getShortStringDateForPath();
     }
 
     private Boolean getPtclIsNotSet() {
@@ -275,10 +258,10 @@ public class IOHandler {
     }
 
     Map<String, Map<Date, Double>> getDateToTravelTimes() throws IOException, ClassNotFoundException {
-        if (!fileExists(getDateToTravelTimesMapPath(passengerStartTime.getShortStringDateForPath(), passengerEndTime.getShortStringDateForPath()))) {
-            TravelTimesHandler.makeDateToTravelTimes(passengerStartTime, passengerEndTime, this);
+        if (!fileExists(getDateToTravelTimesMapPath(scenarioStartTime.getShortStringDateForPath(), scenarioEndTime.getShortStringDateForPath()))) {
+            TravelTimesHandler.makeDateToTravelTimes(scenarioStartTime, scenarioEndTime, this);
         }
-        return (Map<String, Map<Date, Double>>) readFile(getDateToTravelTimesMapPath(passengerStartTime.getShortStringDateForPath(), passengerEndTime.getShortStringDateForPath()));
+        return (Map<String, Map<Date, Double>>) readFile(getDateToTravelTimesMapPath(scenarioStartTime.getShortStringDateForPath(), scenarioEndTime.getShortStringDateForPath()));
     }
 
     public Map<String, Link> getLinkMap() throws IOException {

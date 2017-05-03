@@ -38,24 +38,24 @@ import java.util.List;
  * Created by christof on 23.11.16.
  */
 public class ScenarioGenerator {
-    //    private static final String TAXI_DATA_DIRECTORY = "D:/Taxi_data/";    //path to director with the FOIL-directories
+    //    private static final String taxiDataDirectory = "D:/Taxi_data/";    //path to director with the FOIL-directories
     private static final String TAXI_DATA_DIRECTORY = "/media/christof/Elements/Taxi_data/";
     private static final String TRAVEL_TIMES_DIRECTORY = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
-    private static final Date PASSENGER_START_TIME = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
-    private static final Date PASSENGER_END_TIME = new Date("2013-11-18 17:00:00");
+    private static final Date TAXI_DATA_START_TIME = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
+    private static final Date TAXI_DATA_END_TIME = new Date("2013-11-18 17:00:00");
 
-    private static final Date TAXI_START_TIME = new Date("2013-11-18 16:00:00");
-    private static final Date TAXI_END_TIME = new Date("2013-11-18 17:00:00");
+//    private static final Date TAXI_START_TIME = new Date("2013-11-18 16:00:00");
+//    private static final Date TAXI_END_TIME = new Date("2013-11-18 17:00:00");
     private static final double MAX_VEHICLE_SPEED_KMH = 120d;
 
-//    private static final long PICKUP_DURATION = 30 * 1000L;
-//    private static final long DELIVERY_DURATION = 30 * 1000L;
+//    private static final long pickupDuration = 30 * 1000L;
+//    private static final long deliveryDuration = 30 * 1000L;
 
     private static final long PICKUP_DURATION = 0L;
     private static final long DELIVERY_DURATION = 0L;
 
 
-    private static final String ATTRIBUTE = "TimeWindow";
+    private static final String SCENARIO_NAME = "TimeWindow";
     private static final int CUT_LENGTH = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
     private static final long SCENARIO_DURATION = (1 * 60 * 60 * 1000L) + 1L;
@@ -70,20 +70,25 @@ public class ScenarioGenerator {
     private boolean ridesharing;
     private boolean debug;
 
+    final Builder builder;
+
 
     private IOHandler ioHandler;
+    private String scenarioName;
 
-    public ScenarioGenerator() {
+    public ScenarioGenerator(Builder builder) {
+        this.builder = builder;
+        scenarioName = builder.scenarioName;
         IOHandler ioHandler = new IOHandler();
-        ioHandler.setTaxiDataDirectory(TAXI_DATA_DIRECTORY);
-        ioHandler.setPassengerStartTime(PASSENGER_START_TIME);
-        ioHandler.setPassengerEndTime(PASSENGER_END_TIME);
-        ioHandler.setTaxiStartTime(TAXI_START_TIME);
-        ioHandler.setTaxiEndTime(TAXI_END_TIME);
-        ioHandler.setAttribute(ATTRIBUTE);
-        ioHandler.setCutLength(CUT_LENGTH);
-        if (TRAFFIC) {
-            ioHandler.setTravelTimesDirectory(TRAVEL_TIMES_DIRECTORY);
+        ioHandler.setTaxiDataDirectory(builder.taxiDataDirectory);
+        ioHandler.setScenarioStartTime(builder.taxiDataStartTime);
+        ioHandler.setScenarioEndTime(builder.taxiDataEndTime);
+//        ioHandler.setTaxiStartTime(TAXI_DATA_START_TIME);
+//        ioHandler.setTaxiEndTime(TAXI_DATA_END_TIME);
+        ioHandler.setAttribute(builder.scenarioName);
+        ioHandler.setCutLength(builder.cutLength);
+        if (builder.traffic) {
+            ioHandler.setTravelTimesDirectory(builder.travelTimesDirectory);
             ioHandler.setWithTraffic();
         }
         this.ioHandler = ioHandler;
@@ -92,8 +97,24 @@ public class ScenarioGenerator {
     }
 
     public static void main(String[] args) throws Exception {
-        ScenarioGenerator sg = new ScenarioGenerator();
-        Scenario s = sg.generateTaxiScenario(false, true);
+
+        ScenarioGenerator sg =
+                ScenarioGenerator.builder()
+                        .setCutLength(CUT_LENGTH)
+                        .setDeliveryDuration(DELIVERY_DURATION)
+                        .setPickupDuration(PICKUP_DURATION)
+                        .setMaxVehicleSpeedKmh(MAX_VEHICLE_SPEED_KMH)
+                        .setRidesharing(false)
+                        .setScenarioDuration(SCENARIO_DURATION_DEBUG)
+                        .setScenarioName("test")
+                        .setTaxiDataDirectory(TAXI_DATA_DIRECTORY)
+                        .setTravelTimesDirectory(TRAVEL_TIMES_DIRECTORY)
+                        .setTaxiDataStartTime(TAXI_DATA_START_TIME)
+                        .setTaxiDataEndTime(TAXI_DATA_END_TIME)
+                        .setTickSize(TICK_SIZE)
+                        .setTraffic(TRAFFIC)
+                        .build();
+        Scenario s = sg.generateTaxiScenario(true);
         System.out.println("scenario made");
     }
 
@@ -101,10 +122,13 @@ public class ScenarioGenerator {
         return ioHandler;
     }
 
+    public String getScenarioName() {
+        return scenarioName;
+    }
 
     private void setScenarioFileFullName() {
-        getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + "_" + getIoHandler().getAttribute() + "_" + getIoHandler().getPassengerStartTime().getShortStringDateForPath() + "_"
-                + getIoHandler().getPassengerEndTime().getShortStringDateForPath());
+        getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + "_" + getIoHandler().getAttribute() + "_" + getIoHandler().getScenarioStartTime().getShortStringDateForPath() + "_"
+                + getIoHandler().getScenarioEndTime().getShortStringDateForPath());
     }
 
     private void makeMap() {
@@ -115,8 +139,7 @@ public class ScenarioGenerator {
         }
     }
 
-    public Scenario generateTaxiScenario(boolean ridesharing, boolean debug) throws Exception {
-        this.ridesharing = ridesharing;
+    public Scenario generateTaxiScenario(boolean debug) throws Exception {
         this.debug = debug;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
@@ -133,8 +156,8 @@ public class ScenarioGenerator {
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(SCENARIO_DURATION_DEBUG))
                     .scenarioLength(SCENARIO_DURATION_DEBUG);
-//                    .addEvent(TimeOutEvent.create(SCENARIO_DURATION))
-//                    .scenarioLength(SCENARIO_DURATION);
+//                    .addEvent(TimeOutEvent.create(scenarioDuration))
+//                    .scenarioLength(scenarioDuration);
             addPassengersDebug(builder);
 //            addPassengers(builder);
         } else {
@@ -232,8 +255,8 @@ public class ScenarioGenerator {
             if (true && (totalCount % 20 == 0)) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
-                long pickupStartTime = passenger.getStartTime(PASSENGER_START_TIME);
-                long pickupTimeWindow = passenger.getStartTimeWindow(PASSENGER_START_TIME);
+                long pickupStartTime = passenger.getStartTime(TAXI_DATA_START_TIME);
+                long pickupTimeWindow = passenger.getStartTimeWindow(TAXI_DATA_START_TIME);
                 long deliveryStartTime = getDeliveryStartTime(passenger, routingTable);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)
@@ -282,8 +305,8 @@ public class ScenarioGenerator {
         for (SimulationObject object : passengers) {
             addedCount++;
             Passenger passenger = (Passenger) object;
-            long pickupStartTime = passenger.getStartTime(PASSENGER_START_TIME);
-            long pickupTimeWindow = passenger.getStartTimeWindow(PASSENGER_START_TIME);
+            long pickupStartTime = passenger.getStartTime(TAXI_DATA_START_TIME);
+            long pickupTimeWindow = passenger.getStartTimeWindow(TAXI_DATA_START_TIME);
             Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                     .orderAnnounceTime(pickupStartTime)
                     .pickupTimeWindow(TimeWindow.create(pickupStartTime, pickupStartTime + pickupTimeWindow))
@@ -309,7 +332,7 @@ public class ScenarioGenerator {
     }
 
     private long getDeliveryStartTime(Passenger passenger, RoutingTable routingTable) {
-        long startTime = passenger.getStartTime(PASSENGER_START_TIME);
+        long startTime = passenger.getStartTime(TAXI_DATA_START_TIME);
         long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
         return startTime + travelTime + PICKUP_DURATION;
     }
@@ -338,4 +361,126 @@ public class ScenarioGenerator {
     }
 
 
-}
+    public static ScenarioGenerator.Builder builder() {
+        return new ScenarioGenerator.Builder();
+    }
+
+    public static class Builder {
+        private String taxiDataDirectory;
+        private String travelTimesDirectory;
+        private Date taxiDataStartTime;
+        private Date taxiDataEndTime;
+        private double maxVehicleSpeedKmh;
+        private long pickupDuration;
+        private long deliveryDuration;
+        private String scenarioName;
+        private int cutLength;
+        private long scenarioDuration;
+        private boolean traffic;
+        private long tickSize;
+        private boolean ridesharing;
+        private boolean routingtable;
+        private String routingtablePath;
+
+        Builder() {
+            taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
+            travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/";
+            taxiDataStartTime = new Date("2013-11-18 16:00:00");
+            taxiDataEndTime = new Date("2013-11-18 17:00:00");
+            maxVehicleSpeedKmh = 120d;
+            pickupDuration = 30 * 1000L;
+            deliveryDuration = 30 * 1000L;
+            scenarioName = "TimeWindow";
+            cutLength = 500;
+            scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
+            traffic = true;
+            tickSize = 250L;
+            ridesharing = false;
+            routingtable = false;
+
+        }
+
+        public Builder setTaxiDataDirectory(String taxiDataDirectory) {
+            this.taxiDataDirectory = taxiDataDirectory;
+            return this;
+        }
+
+        public Builder setTravelTimesDirectory(String travelTimesDirectory) {
+            this.travelTimesDirectory = travelTimesDirectory;
+            return this;
+        }
+
+        public Builder setTaxiDataStartTime(Date taxiDataStartTime) {
+            this.taxiDataStartTime = taxiDataStartTime;
+            return this;
+        }
+
+        public Builder setTaxiDataEndTime(Date taxiDataEndTime) {
+            this.taxiDataEndTime = taxiDataEndTime;
+            return this;
+        }
+
+        public Builder setMaxVehicleSpeedKmh(double maxVehicleSpeedKmh) {
+            this.maxVehicleSpeedKmh = maxVehicleSpeedKmh;
+            return this;
+        }
+
+        public Builder setPickupDuration(long pickupDuration) {
+            this.pickupDuration = pickupDuration;
+            return this;
+        }
+
+        public Builder setDeliveryDuration(long deliveryDuration) {
+            this.deliveryDuration = deliveryDuration;
+            return this;
+        }
+
+        public Builder setScenarioName(String scenarioName) {
+            this.scenarioName = scenarioName;
+            return this;
+        }
+
+        public Builder setCutLength(int cutLength) {
+            this.cutLength = cutLength;
+            return this;
+        }
+
+        public Builder setScenarioDuration(long scenarioDuration) {
+            this.scenarioDuration = scenarioDuration;
+            return this;
+        }
+
+        public Builder setTraffic(boolean traffic) {
+            this.traffic = traffic;
+            return this;
+        }
+
+        public Builder setTickSize(long tickSize) {
+            this.tickSize = tickSize;
+            return this;
+        }
+
+        public Builder setRidesharing(boolean ridesharing) {
+            this.ridesharing = ridesharing;
+            return this;
+        }
+
+
+//        public Builder setRoutingtablePath(String routingtablePath) {
+//            this.routingtable = true;
+//            this.routingtablePath = routingtablePath;
+//            return this;
+//        }
+
+        public ScenarioGenerator build() {
+            return new ScenarioGenerator(this);
+        }
+    }
+
+
+
+
+
+
+
+    }
